@@ -23,8 +23,46 @@
           <input type="text" id="name" class="form-control" />
         </div>
         <!-- birthday -->
+        <div class="mb-3">
+          <label for="birthday" class="form-label">Ngày sinh</label>
+          <input type="date" id="birthday" class="form-control" />
+        </div>
         <!-- submit -->
+        <button class="btn btn-outline-info">Thêm</button>
       </form>
+
+      <!-- div thông báo đã thêm thành công-->
+      <div id="notification">
+        <!-- <div class="alert alert-success text-center">Thêm thành công</div> -->
+      </div>
+
+      <!-- table để hiện thị danh sách sinh viên -->
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Tên</th>
+            <th>Ngày sinh</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- student đc render, mỗi 1 student là 1 thẻ tr -->
+          <!-- <tr>
+            <td>1</td>
+            <td>Hùng</td>
+            <td>12/9/1999</td>
+            <td>
+              <button
+                class="btn btn-outline-danger btn-sm btn-remove"
+                data-id="SE1"
+              >
+                Xoá
+              </button>
+            </td>
+          </tr> -->
+        </tbody>
+      </table>
     </div>
 
     <script src="./index.js"></script>
