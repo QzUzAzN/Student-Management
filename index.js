@@ -24,6 +24,25 @@ Store.prototype.add = function (student) {
   localStorage.setItem("students", JSON.stringify(students));
 };
 
+// .getStudent(id): hàm nhận vào id, tìm student trong students
+Store.prototype.getStudent = function (id) {
+  let students = this.getStudents();
+  let student = students.find((student) => student.id == id);
+  return student;
+};
+
+// .remove(id): hàm nhận vào id, tìm và xoá student trong students
+Store.prototype.remove = function (id) {
+  let students = this.getStudents();
+  // từ id tìm vị trí của student trong students
+  let indexRemove = students.findIndex((student) => student.id == id);
+
+  // xog ròi dùng vị trí đó xoá bằng splice
+  students.splice(indexRemove, 1);
+  // lưu lại students lên ls
+  localStorage.setItem("students", JSON.stringify(students));
+};
+
 // dùng student có đc để hiển thị lên giao diện
 //RenderUI
 // RenderUI là thằng chuyên các method xử lý giao diện
@@ -66,6 +85,36 @@ RenderUI.prototype.alert = function (msg, type = "success") {
   }, 2000);
 };
 
+// .renderAll(): hàm này sẽ vào ds students ở local storage và biến từng student thành tr
+//    => sau đó nhét và hiển thị lên table
+RenderUI.prototype.renderAll = function () {
+  let store = new Store(); //tạo instance của Store
+  // lấy ds students từ ls
+  let students = store.getStudents();
+
+  // duyệt students và biến mỗi student thành tr => dùng reduce chứ ko dùng for
+  let htmlContent = students.reduce((total, student, studentIndex) => {
+    let { id, name, birthday } = student;
+    let str = `<tr>
+          <td>${studentIndex + 1}</td>
+          <td>${name}</td>
+          <td>${birthday}</td>
+          <td>
+            <button
+              class="btn btn-outline-danger btn-sm btn-remove"
+              data-id="${id}"
+              >
+              Xoá
+              </button>
+              </td>
+        </tr>`;
+
+    return total + str;
+  }, "");
+
+  document.querySelector("tbody").innerHTML = htmlContent;
+};
+
 // main flow
 document.querySelector("form").addEventListener("submit", (event) => {
   event.preventDefault();
@@ -83,4 +132,33 @@ document.querySelector("form").addEventListener("submit", (event) => {
   let ui = new RenderUI();
   ui.add(newStudent);
   ui.alert(`Đã thêm thành công sv có tên ${name}`);
+});
+
+document.addEventListener("DOMContentLoaded", (event) => {
+  let ui = new RenderUI();
+  ui.renderAll();
+});
+
+// sự kiện xoá
+document.querySelector("tbody").addEventListener("click", (event) => {
+  if (event.target.classList.contains("btn-remove")) {
+    let idRemove = event.target.dataset.id;
+    // idRemove là mã của student cần xoá
+    // từ idRemove này tìm student cần xoá trong students
+    let store = new Store();
+    let student = store.getStudent(idRemove);
+
+    // getStudent(id) là hàm tìm student bằng id trong students | hàm chưa làm
+    let isConfirmed = confirm(`Bạn có chắc là xoá sv ${student.name} không ?`);
+
+    if (isConfirmed) {
+      // xoá ls
+      store.remove(idRemove);
+      // xoá ui
+      let ui = new RenderUI();
+      ui.renderAll(); //không nên sử dụng
+      // hiện thông báo xoá thành công
+      ui.alert(`SV ${student.name} đã bị xoá`, "danger");
+    }
+  }
 });
